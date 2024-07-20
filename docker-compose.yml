@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  print-estimater:
+    container_name: print-estimater
+    image: ${CONTAINER_IMAGE}
+    restart: always
+    ports:
+      - "15686:15686"
+    volumes:
+      - "${DB_LOCAL_STORAGE}/print-estimater.db:/usr/share/printestimater/print-estimater.db"
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}

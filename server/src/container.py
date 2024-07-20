@@ -1,8 +1,8 @@
 from dependency_injector import containers, providers
-from server.src import container
-from server.src.dataaccess import dataprovider, memoryprovider
+from src import container
+from src.dataaccess import dataprovider, memoryprovider, sqliteprovider
 
-from server.src import container, controllers, dataaccess
+from src import container, controllers, dataaccess
 
 class Container(containers.DeclarativeContainer):
 
@@ -17,6 +17,12 @@ def create_container(module_name):
 
     c.config.sqlite.connectionstring.from_env('SQLITE_CONNECTIONSTRING', as_=str, default='')
 
-    c.db.override(providers.Singleton(
-        memoryprovider.MemoryProvider
-    ))
+    if c.config.sqlite.connectionstring() != '':
+        c.db.override(providers.Singleton(
+            sqliteprovider.SqliteProvider,
+            connectionstring = c.config.sqlite.connectionstring
+        ))
+    else:
+        c.db.override(providers.Singleton(
+            memoryprovider.MemoryProvider
+        ))

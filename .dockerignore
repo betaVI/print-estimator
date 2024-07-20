@@ -1,0 +1,7 @@
+*.yml
+.git*
+.vscode/
+**/venv/**/*
+**/venv
+**/node_modules/**/*
+**/node_modules

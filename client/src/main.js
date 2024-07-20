@@ -1,11 +1,22 @@
-import './assets/main.css'
+// import './assets/main.css'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import Spinner from './components/Spinner.vue'
+import Alert from './components/Alert.vue'
+import ListView from './components/ListView.vue'
+import EditView from './components/EditView.vue'
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(router)
+app.component('Spinner', Spinner);
+app.component('Alert', Alert);
+app.component('ListView', ListView)
+app.component('EditView', EditView)
 
-app.mount('#app')
+app.use(router);
+
+app.mount('#app');
