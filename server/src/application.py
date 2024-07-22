@@ -1,6 +1,6 @@
 import os, sys, decimal, flask.json
 from flask import Flask
-# from flask_cors import CORS
+from flask_cors import CORS
 from src.container import create_container
 from src.models import model, estimate, filament, settings, customer, print
 
@@ -27,7 +27,6 @@ def create_app() -> Flask:
     #app.register_blueprint(...)
     app.register_blueprint(estimateapi)
 
-    # removed because client and server are hosted on the same app
-    # CORS(app, resources={r'/*': {'origins': '*'}})
+    CORS(app, resources={r'/*': {'origins': '*'}})
 
     return app

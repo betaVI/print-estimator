@@ -1,4 +1,4 @@
-var apiendpoint = '';//'http://localhost:5000';
+var apiendpoint = import.meta.env.VITE_API_ENDPOINT.trim();
 
 export const sendRequest = async function(path, method, data = null){
     let requestInit = { method: method };

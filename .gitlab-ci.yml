@@ -1,0 +1,67 @@
+image: docker:18.09.7
+
+stages:
+  - build QA
+  - deploy QA
+  - build PROD
+  - deploy PROD
+
+variables:
+  QA_CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:qa
+  PROD_CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:latest
+
+.docker_login_template: &docker-login
+  - ls -lah /usr/local/share/ca-certificates/
+  - update-ca-certificates --fresh
+  - docker info
+  - apk add --no-cache openssl curl
+  - openssl s_client -connect $CI_REGISTRY:443
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+
+BUILD:
+  stage: build QA
+  before_script:
+    - *docker-login
+  script:
+    - echo $QA_CONTAINER_IMAGE
+    - docker build -t $QA_CONTAINER_IMAGE  .
+    - docker push $QA_CONTAINER_IMAGE
+
+DEPLOY:
+  variables:
+    ENVIRONMENT: QA
+    CONTAINER_IMAGE: $QA_CONTAINER_IMAGE
+  stage: deploy QA
+  before_script:
+    - *docker-login
+  script:
+    - apk add docker-compose
+    - docker info
+    # - ls -lah ~
+    # - echo $CLIENT_CERTIFICATE > ~/.docker/cert.pem
+    # - echo $CLIENT_KEY_CERTIFICATE > ~/.docker/key.pem
+    # - echo $CA_ROOT_CERTIFICATE > ~/.docker/ca.pem
+    # - ls -lah ~/.docker
+    - printenv
+    # - export CONTAINER_IMAGE=$QA_CONTAINER_IMAGE #DOCKER_TLS_VERIFY=1 DOCKER_HOST=$UAT_HOSTNAME:2376
+    - docker-compose -f docker-compose.yml down --remove-orphans
+    - docker-compose -f docker-compose.yml pull
+    - docker-compose -f docker-compose.yml up -d
+    # - unset DOCKER_HOST DOCKER_TLS_VERIFY
+
+# DEPLOY:
+#   stage: deploy
+#   before_script:
+#     - 'which ssh-agent || (apk update && apk add openssh-client)'
+#     - eval $(ssh-agent -s)
+#     - echo "$PROD_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+#     - mkdir -p ~/.ssh
+#     - chmod 700 ~/.ssh
+#     - ssh-keyscan $PROD_URL >> ~/.ssh/known_hosts
+#     - chmod 644 ~/.ssh/known_hosts
+#     - *docker-login
+#   script:
+#     - apk add docker-compose
+#     - docker-compose -H "ssh://$PROD_USER@$PROD_URL" down --remove-orphans
+#     - docker-compose -H "ssh://$PROD_USER@$PROD_URL" pull
+#     - docker-compose -H "ssh://$PROD_USER@$PROD_URL" up -d

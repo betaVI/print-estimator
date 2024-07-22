@@ -5,6 +5,9 @@ WORKDIR /client
 COPY ./client/package*.json ./
 RUN npm install
 COPY ./client ./
+
+ENV VITE_API_ENDPOINT=''
+
 RUN npm run build
 
 # server build
