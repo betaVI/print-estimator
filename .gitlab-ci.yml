@@ -30,7 +30,7 @@ BUILD:
 DEPLOY:
   variables:
     ENVIRONMENT: QA
-    CONTAINER_IMAGE: $QA_CONTAINER_IMAGE
+    # CONTAINER_IMAGE: $QA_CONTAINER_IMAGE
   stage: deploy QA
   before_script:
     - *docker-login
@@ -43,7 +43,7 @@ DEPLOY:
     # - echo $CA_ROOT_CERTIFICATE > ~/.docker/ca.pem
     # - ls -lah ~/.docker
     - printenv
-    # - export CONTAINER_IMAGE=$QA_CONTAINER_IMAGE #DOCKER_TLS_VERIFY=1 DOCKER_HOST=$UAT_HOSTNAME:2376
+    - export CONTAINER_IMAGE=$QA_CONTAINER_IMAGE #DOCKER_TLS_VERIFY=1 DOCKER_HOST=$UAT_HOSTNAME:2376
     - docker-compose -f docker-compose.yml down --remove-orphans
     - docker-compose -f docker-compose.yml pull
     - docker-compose -f docker-compose.yml up -d
