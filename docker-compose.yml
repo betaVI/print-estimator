@@ -9,5 +9,9 @@ services:
       - "15686:15686"
     volumes:
       - "${DB_LOCAL_STORAGE}/print-estimater.db:/usr/share/printestimater/print-estimater.db"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.print-estimater.rule: 'Host("printestimater.${DOMAIN_NAME}")'
+      traefik.http.routers.print-estimater.tls: "true"
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
