@@ -13,5 +13,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.print-estimater.rule: 'Host("printestimater.${DOMAIN_NAME}")'
       traefik.http.routers.print-estimater.tls: "true"
+    networks:
+      - proxy-network
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
