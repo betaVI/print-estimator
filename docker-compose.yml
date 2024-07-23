@@ -17,3 +17,8 @@ services:
       - proxy-network
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
+
+networks:
+  proxy-network:
+    name: proxy-network
+    external: true
