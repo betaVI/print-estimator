@@ -23,8 +23,8 @@ RUN python3 -m pip install --upgrade pip && \
 COPY --from=client-build /client/dist /usr/share/printestimater/src/static
 
 # default sqlite db file
-ENV SQLITE_CONNECTIONSTRING='print-estimater.db'
-RUN touch ${SQLITE_CONNECTIONSTRING}
+ENV SQLITE_CONNECTIONSTRING='data/print-estimater.db'
+RUN mkdir data
 
 EXPOSE 15686
 CMD [ "gunicorn", "--bind", "0.0.0.0:15686", "src.application:create_app()"]
