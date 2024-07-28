@@ -6,8 +6,9 @@ from src.models import estimate, filament, settings, customer, print
 
 estimateapi = Blueprint('estimateapi', __name__)
 
-@estimateapi.route('/')
-def index():
+@estimateapi.route('/', defaults={'path':''})
+@estimateapi.route('/<path:path>')
+def index(path):
     return render_template("index.html")
 
 @estimateapi.route('/api/settings', methods=[ 'GET', 'PATCH' ])
