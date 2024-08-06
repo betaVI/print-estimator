@@ -77,28 +77,29 @@
                 <tbody>
                     <tr v-for="(model, index) in estimate.models" :keys="index" class="align-middle">
                         <td>
-                            <input v-model.trim="model.name" type="text" class="form-control"/>
+                            <!-- <FileImport v-model="model.file" class="form-control form-control-sm"></FileImport> -->
+                            <input v-model.trim="model.name" type="text" class="form-control form-control-sm"/>
                         </td>
                         <td>
-                            <input v-model.number="model.quantity" type="text" class="form-control"/>
+                            <input v-model.number="model.quantity" type="text" class="form-control form-control-sm"/>
                         </td>
                         <td>
-                            <input v-model.number="model.grams" type="text" class="form-control"/>
+                            <input v-model.number="model.grams" type="text" class="form-control form-control-sm"/>
                         </td>
                         <td class="text-center">
                             <input v-model="model.postprocessing" type="checkbox" class="form-check-input"/>
                         </td>
                         <td>
-                            <input v-model.number="model.minutes" type="text" class="form-control"/>
+                            <input v-model.number="model.minutes" type="text" class="form-control form-control-sm"/>
                         </td>
                         <td>
-                            <select v-model="model.filamentid" class="form-select">
+                            <select v-model="model.filamentid" class="form-select form-select-sm">
                                 <option v-for="filament in filaments" :value="filament.id">{{ getFilamentName(filament.id) }}</option>
                             </select>
                         </td>
                         <td>{{ getModelCost(model) }}</td>
                         <td class="text-end">
-                            <button :disabled="issubmitting" type="button" class="btn btn-outline-danger btn-sm" @click="models.splice(index,1)">
+                            <button :disabled="issubmitting" type="button" class="btn btn-outline-danger btn-sm" @click="estimate.models.splice(index,1)">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </td>
