@@ -1,7 +1,8 @@
 import sqlite3, traceback
 
 from src.dataaccess.dataprovider import DataProvider
-from src.models import estimate, settings, filament, model, customer, print
+from src.models import estimate, settings, filament, model, customer
+from src.models.print import Print
 
 class SqliteProvider(DataProvider):
     def __init__(self, connectionstring: str) -> None:
@@ -165,17 +166,17 @@ class SqliteProvider(DataProvider):
         if id != 0:
             sql += ' where id = ?'
             record = self._executeOne(sql, (id,))
-            return print.Print(dict(record))
+            return Print(dict(record))
         else:
             sql += ' order by createon desc'
-            return [print.Print(dict(r)) for r in self._executeRead(sql)]
+            return [Print(dict(r)) for r in self._executeRead(sql)]
     
-    def createPrint(self, print: print.Print):
+    def createPrint(self, print: Print):
         sql = "insert into prints (customerid, estimateid, price, createon) values (?,?,?, julianday(?))"
         values = (print.customerid, print.estimateid, print.price, print.createon)
         self._execute(sql, values)
 
-    def updatePrint(self, id:int, print: print.Print):
+    def updatePrint(self, id:int, print: Print):
         sql = 'update prints set customerid = ?, estimateid = ?, price = ?, createon = julianday(?) where id = ?'
         values = (print.customerid, print.estimateid, print.price, print.createon, id)
         self._execute(sql, values)
