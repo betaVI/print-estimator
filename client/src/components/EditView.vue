@@ -1,5 +1,4 @@
 
-import Spinner from '@/components/Spinner.vue';
 <template>
     <form>
         <div class="container">
