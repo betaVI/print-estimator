@@ -81,16 +81,18 @@ class SqliteProvider(DataProvider):
                             createon real NOT NULL 
                       )""")
         
-        self.saveSettings(settings.Settings({
-            'printablehours': 16,
-            'laborcost': 30,
-            'kwhcost': .018,
-            'printlabor': .01,
-            'colorchangelabor': .03,
-            'postprocessinglabor': .05,
-            'electricmarkup': .5,
-            'materialmarkup': .5
-        }))
+        config = self._executeOne("SELECT * from settings limit 1")
+        if config is None:
+            self.saveSettings(settings.Settings({
+                'printablehours': 16,
+                'laborcost': 30,
+                'kwhcost': .018,
+                'printlabor': .01,
+                'colorchangelabor': .03,
+                'postprocessinglabor': .05,
+                'electricmarkup': .5,
+                'materialmarkup': .5
+            }))
 
     def getSettings(self):
         config = self._executeOne("SELECT * from settings limit 1")
