@@ -22,6 +22,8 @@ RUN python3 -m pip install --upgrade pip && \
 # copy client app files to flask
 COPY --from=client-build /client/dist /usr/share/printestimater/src/static
 
+# output python print statements to logs
+ENV PYTHONUNBUFFERED 1
 # default sqlite db file
 ENV SQLITE_CONNECTIONSTRING='data/print-estimater.db'
 RUN mkdir data
