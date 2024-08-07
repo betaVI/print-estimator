@@ -11,7 +11,7 @@ ENV VITE_API_ENDPOINT=''
 RUN npm run build
 
 # server build
-FROM python:3.10-buster AS server-build
+FROM python:3.10.12-slim AS server-build
 
 WORKDIR /usr/share/printestimater
 COPY ./server /usr/share/printestimater/
@@ -23,7 +23,7 @@ RUN python3 -m pip install --upgrade pip && \
 COPY --from=client-build /client/dist /usr/share/printestimater/src/static
 
 # output python print statements to logs
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 # default sqlite db file
 ENV SQLITE_CONNECTIONSTRING='data/print-estimater.db'
 RUN mkdir data
