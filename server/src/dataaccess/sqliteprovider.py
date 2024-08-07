@@ -219,7 +219,10 @@ class SqliteProvider(DataProvider):
             estimate.totalcostlabor,
             estimate.minimumprice
             )
+        print('QUERY: ' + sql)
+        print('VALUES: ' + str(values))
         lastid = self._executeOne(sql,values)
+        print('RESULT: ' + str(lastid))
         self._createModels(lastid['id'], estimate.models)
 
     def updateEstimate(self, id: int, estimate: estimate.Estimate):
@@ -303,8 +306,6 @@ class SqliteProvider(DataProvider):
                 record = c.fetchone()
                 return record
             except Exception as e:
-                print('QUERY: ' + statement)
-                print('VALUES: ' + str(values))
                 print(f'Sqlite Execute One error {traceback.format_exc()}')
 
     def _execute(self, statement, values=None) -> None:
