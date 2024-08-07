@@ -303,6 +303,8 @@ class SqliteProvider(DataProvider):
                 record = c.fetchone()
                 return record
             except Exception as e:
+                print('QUERY: ' + statement)
+                print('VALUES: ' + str(values))
                 print(f'Sqlite Execute One error {traceback.format_exc()}')
 
     def _execute(self, statement, values=None) -> None:
