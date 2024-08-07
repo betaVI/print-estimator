@@ -2,7 +2,8 @@ from flask import Blueprint, request, jsonify, render_template
 from dependency_injector.wiring import Provide, inject
 from src.dataaccess.dataprovider import DataProvider
 from src.container import Container
-from src.models import estimate, filament, settings, customer, print
+from src.models import estimate, filament, settings, customer
+from src.models.print import Print
 
 estimateapi = Blueprint('estimateapi', __name__)
 
@@ -126,6 +127,7 @@ def estimates(id: int=0, db: DataProvider = Provide[Container.db]):
     elif request.method == 'POST' and id == 0:
         payload = request.get_json()
         e = estimate.Estimate(payload)
+        print('Here')
         db.createEstimate(e)
         return jsonify({
             'success': True
@@ -165,13 +167,13 @@ def prints(id: int=0, db: DataProvider = Provide[Container.db]):
             })
     elif request.method == 'POST' and id == 0:
         payload = request.get_json()
-        db.createPrint(print.Print(payload))
+        db.createPrint(Print(payload))
         return jsonify({
             'success': True,
         }), 201
     elif request.method == 'PATCH' and id != 0:
         payload = request.get_json()
-        db.updatePrint(id, print.Print(payload))
+        db.updatePrint(id, Print(payload))
         return jsonify({
             'success': True
         }), 200
