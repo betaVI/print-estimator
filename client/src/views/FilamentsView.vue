@@ -25,8 +25,12 @@
                 <td>{{ filament.grams }}</td>
                 <td>{{ (filament.cost / filament.grams).toFixed(3) }}</td>
                 <td class="text-end">
-                    <button type="button" class="btn btn-outline-info btn-sm mx-sm-1" @click="$router.push({ name: 'filament', params: { id: filament.id }})">Edit</button>
-                    <button type="button" class="btn btn-outline-danger btn-sm" @click="deleteFilament(filament.id)">Delete</button>
+                    <button type="button" class="btn btn-outline-info btn-sm mx-sm-1" @click="$router.push({ name: 'filament', params: { id: filament.id }})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" @click="deleteFilament(filament.id)">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </td>
             </tr>
         </template>

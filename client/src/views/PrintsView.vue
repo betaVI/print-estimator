@@ -11,7 +11,7 @@
         </template>
         <template #default>
             <tr v-if="prints.length==0" class="text-center">
-                <td colspan="3">No Records to display</td>
+                <td colspan="5">No Records to display</td>
             </tr>
             <tr v-else v-for="(print,index) in prints" :keys="index">
                 <td>{{ print.createon }}</td>
