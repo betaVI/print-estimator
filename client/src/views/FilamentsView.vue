@@ -2,10 +2,10 @@
     <ListView title="Filaments" :isloading="isloading" @onaddclick="$router.push({name:'filament'})">
         <template #headers>
             <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Active</th>
-                <th scope="col">Type</th>
+                <th scope="col">Vendor</th>
                 <th scope="col">Color</th>
+                <th scope="col">Name</th>
+                <th scope="col">Material</th>
                 <th scope="col">Cost</th>
                 <th scope="col">Grams</th>
                 <th scope="col">$/g</th>
@@ -17,19 +17,19 @@
                 <td colspan="8">No Records to display</td>
             </tr>
             <tr v-for="(filament, index) in filaments" :keys="index">
+                <td>{{ filament.vendor.name }}</td>
+                <td>
+                    <div v-if="filament.color_hex" class="badge d-inline" :style="{ 'background-color': '#' + filament.color_hex }"></div>
+                    <div v-else v-for="hex in filament.multi_color_hexes.split(',')" class="badge d-block w-25" :style="{ 'background-color': '#' + hex }"></div>
+                </td>
                 <td>{{ filament.name }}</td>
-                <td><i class="bi bi-check-lg" v-if="filament.isactive"></i></td>
-                <td>{{ filament.type }}</td>
-                <td>{{ filament.color }}</td>
-                <td>{{ filament.cost }}</td>
-                <td>{{ filament.grams }}</td>
-                <td>{{ (filament.cost / filament.grams).toFixed(3) }}</td>
+                <td>{{ filament.material }}</td>
+                <td>{{ filament.price }}</td>
+                <td>{{ filament.weight }}</td>
+                <td>{{ (filament.price / filament.weight).toFixed(3) }}</td>
                 <td class="text-end">
                     <button type="button" class="btn btn-outline-info btn-sm mx-sm-1" @click="$router.push({ name: 'filament', params: { id: filament.id }})">
                         <i class="bi bi-pencil"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-danger btn-sm" @click="deleteFilament(filament.id)">
-                        <i class="bi bi-trash"></i>
                     </button>
                 </td>
             </tr>
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { sendRequest } from '@/utilities'
+import { getFilaments } from '@/spoolman-api';
 
 export default{
     data(){
@@ -56,24 +56,13 @@ export default{
     methods:{
         async getFilaments(){
             this.isloading = true;
-            try{
-                let data = await sendRequest('/api/filaments', 'GET');
-                this.filaments = data.filaments;
-            }catch(error){
-                console.log(error);
+            let response = await getFilaments();
+            if (response.success){
+                this.filaments = response.filaments;
+            }else{
+                console.log(response.error);
             }
             this.isloading = false;
-        },
-        async deleteFilament(id){
-            try{
-                let data = await sendRequest('/api/filaments/' + id, 'DELETE')
-                if (!data.success){
-                    console.log(error);
-                }
-                this.getFilaments()
-            }catch(error){
-                console.log(error);
-            }
         }
     },
     mounted(){

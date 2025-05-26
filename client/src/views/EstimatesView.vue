@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { sendRequest } from '@/utilities';
+import { getEstimates, deleteEstimate, getSettings } from '@/estimater-api';
 
 export default{
     data(){
@@ -59,37 +59,31 @@ export default{
     },
     methods: {
         async getSettings(){
-            try{
-                let data = await sendRequest('/api/settings', 'GET');
-                this.settings = data.settings;
-            }catch(error){
-                console.log(error);
+            let response = await getSettings();
+            if (response.success){
+                this.settings = response.settings;
+            }
+            else{
+                console.log('Settings failure: ' + response.error);
             }
         },
         async getEstimates(){
             this.estimatesLoading = true;
-            try{
-                let data = await sendRequest('/api/estimates', 'GET');
-                this.estimates = data.estimates;
+            let response = await getEstimates();
+            if (response.success){
+                this.estimates = response.estimates;
             }
-            catch(error){
-                console.log(error);
+            else{
+                console.log('Estimates error: ' + response.error);
             }
             this.estimatesLoading = false;
         },
         async deleteEstimate(id){
-            this.estimatesLoading = true;
-            try{
-                let data = await sendRequest('/api/estimates/' + id,'DELETE');
-                if (!data.success){
-                    console.log(error);
-                }
-                this.getEstimates()
+            let response = await deleteEstimate(id);
+            if (!response.success){
+                console.log(response.error);
             }
-            catch(error){
-                console.log(error);
-            }
-            this.estimatesLoading = false;
+            this.getEstimates();
         },
         formatPrintTime(totaltime){
             let hoursinday = 24;

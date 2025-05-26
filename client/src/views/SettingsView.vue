@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { sendRequest } from '@/utilities';
+import { getSettings, saveSettings } from '@/estimater-api';
 
 export default{
     data(){
@@ -101,28 +101,23 @@ export default{
     methods:{
         async loadSettings(){
             this.isloading = true;
-            try{
-                let data = await sendRequest('/api/settings', 'GET');
-                this.settings = data.settings;
-            }catch(error){
-                console.log(error);
-                this.showAlert(error);
+            let response = await getSettings();
+            if (response.success){
+                this.settings = response.settings;
+            }
+            else{
+                console.log(response.error);
             }
             this.isloading = false;
         },
         async saveSettings(){
             this.issubmitting = true;
-            try{
-                let data = await sendRequest('/api/settings', 'PATCH', this.settings);
-                if (data.success){
-                    this.showAlert('Successfully updated settings', true);
-                }
-                else{
-                    this.showAlert(data.message);
-                }
-            }catch(error){
-                console.log(error);
-                this.showAlert(error);
+            var response = await saveSettings(this.settings);
+            if (response.success){
+                this.showAlert('Successfully updated settings', true);
+            }
+            else{
+                this.showAlert(response.error);
             }
             this.issubmitting = false;
         },

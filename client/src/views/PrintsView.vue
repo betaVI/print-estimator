@@ -33,6 +33,7 @@
 
 <script>
 import { sendRequest } from '@/utilities';
+import { getCustomers, getEstimates, getPrints, deletePrint } from '@/estimater-api';
 
 export default {
     data(){
@@ -46,19 +47,28 @@ export default {
     methods:{
         async loadPage(){
             this.isloading = true;
-            try{
-                let data = await sendRequest('/api/customers', 'GET');
-                this.customers = data.customers;
-
-                data = await sendRequest('/api/estimates', 'GET');
-                this.estimates = data.estimates;
-
-                data = await sendRequest('/api/prints', 'GET');
-                this.prints = data.prints;
-                this.prints.sort(function(c1,c2) {return c1.createon < c2.createon })
-            }catch(error){
-                console.log(error);
+            let response = await getCustomers();
+            this.customers = response.customers;
+            if (!response.success){
+                console.log('Customers error: ' + response.error);
             }
+
+            response = await getEstimates();
+            this.estimates = response.estimates;
+            if (!response.success){
+                console.log('Estimates error: ' + response.error);
+            }
+
+            response = await getPrints();
+            if (response.success){
+                this.prints = response.prints;
+                this.prints.sort(function(c1,c2) {return c1.createon < c2.createon })
+            }
+            else
+            {
+                console.log('Prints error: ' + response.error);
+            }
+
             this.isloading = false;
         },
         displayCustomer(customerid){
@@ -71,15 +81,11 @@ export default {
         },
         async deletePrint(id){
             this.isloading = true;
-            try{
-                let data = await sendRequest('/api/prints/' + id, 'DELETE');
-                if (!data.success){
-                    console.log(error);
-                }
-                this.loadPage();
-            }catch(error){
-                console.log(error);
+            let response = await deletePrint(id);
+            if (!response.success){
+                console.log(response.error);
             }
+            this.loadPage();
             this.isloading = false;
         }
     },

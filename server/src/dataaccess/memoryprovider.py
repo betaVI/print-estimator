@@ -17,26 +17,6 @@ class MemoryProvider(DataProvider):
             'electricmarkup': .5,
             'materialmarkup': .5
         })
-        self.filaments = [
-            filament.Filament({
-                'id': 1,
-                'name': 'Basic',
-                'type': 'PLA',
-                'color': 'Red',
-                'isactive': True,
-                'cost': 19.99,
-                'grams': 1000
-            }),
-            filament.Filament({
-                'id': 2,
-                'name': 'Enhanced',
-                'type': 'PLA+',
-                'color': 'Black',
-                'isactive': True,
-                'cost': 24.99,
-                'grams': 1000
-            })
-        ]
         self.createEstimate(estimate.Estimate({
             'id': 1,
             'name': 'Catan',
@@ -61,29 +41,6 @@ class MemoryProvider(DataProvider):
     def saveSettings(self, settings: settings.Settings):
         self._randomDelay()
         self.settings = settings
-
-    def getFilaments(self, id: int = 0):
-        self._randomDelay()
-        if id!=0:
-            f = self._getFilamentById(id)
-            if f is not None:
-                return filament.Filament(f.__dict__)
-            return None
-        return self.filaments
-    
-    def createFilament(self, filament: filament.Filament):
-        self._randomDelay()
-        filament.id = self._getNextId(self.filaments)
-        self.filaments.append(filament)
-
-    def updateFilament(self, id: int, filament: filament.Filament):
-        self._randomDelay()
-        filament.id = id
-        self.filaments = [ filament if f.id == id else f for f in self.filaments ]
-
-    def deleteFilament(self, id: int):
-        self._randomDelay()
-        self.filaments.remove(self._getFilamentById(id))
 
     def getEstimates(self, id: int = 0):
         self._randomDelay()

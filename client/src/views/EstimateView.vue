@@ -111,7 +111,8 @@
 </template>
 
 <script>
-import { sendRequest } from '@/utilities';
+import { getEstimate, upsertEstimate } from '@/estimater-api';
+import { getFilaments } from '@/spoolman-api';
 
 export default{
     props:{
@@ -141,11 +142,12 @@ export default{
     },
     methods:{
         async loadFilaments(){
-            try{
-                let data = await sendRequest('/api/filaments', 'GET');
-                this.filaments = data.filaments.filter(f=>f.isactive);
-            }catch(error){
-                console.log(error);
+            let response = await getFilaments();
+            if (response.success){
+                this.filaments = response.filaments
+            }
+            else{
+                console.log(response.error);
             }
         },
         async loadEstimate(){
@@ -153,44 +155,41 @@ export default{
             if (this.id !=0){
                 this.title = 'Edit Estimate';
                 this.isloading = true;
-                try{
-                    let data = await sendRequest('/api/estimates/' + this.id, 'GET');
-                    this.estimate = data.estimate;
-                    if (!this.estimate.models){
-                        this.estimate.models = []
-                    }
-                }
-                catch(error){
-                    console.log(error);
+                let response = await getEstimate(this.id);
+                if (response.success){
+                    this.estimate = response.estimate;
                 }
                 this.isloading = false;
             }
         },
         async saveEstimate(){
             this.issubmitting = true;
-            let endpoint = '/api/estimates';
-            let method = 'POST'
-            if (this.id != 0){
-                endpoint += '/' + this.id;
-                method = 'PATCH';
+            this.estimate.models = this.removeEmptyModels(this.estimate.models);
+            let filamentids = [...new Set(this.estimate.models.map(f=>f.filamentid))];
+            let filamentsused = {};
+            filamentids.forEach(id => {
+                let filament = this.filaments.find(f=>f.id == id);
+                filamentsused[id] = filament.price / filament.weight;
+            });
+            // let filamentsused = filamentids.map(id=>{
+            //     let filament = this.filaments.find(f=>f.id == id);
+            //     return {
+            //         id: id,
+            //         cost: filament.price / filament.weight,
+            //     }
+            // });
+            let response = await upsertEstimate(this.id, this.estimate, filamentsused);
+            if (response.success){
+                this.$router.back();
             }
-            try{
-                this.estimate.models = this.removeEmptyModels(this.estimate.models);
-                let data = await sendRequest(endpoint, method, this.estimate);
-                if (data.success){
-                    this.$router.back();
-                }
-                else{
-                    console.log(error);
-                }
-            }catch(error){
-                console.log(error);
+            else{
+                console.log(response.error);
             }
             this.issubmitting = false;
         },
         getFilamentName(id){
             let filament = this.filaments.find(f=>f.id == id);
-            return `${filament.name} ${filament.type} ${filament.color} ($${filament.cost})`;
+            return `${filament.vendor.name} ${filament.material} ${filament.name} ($${filament.price})`;
         },
         getModelCost(model){
             if (model==null || model.filamentid == undefined){
@@ -200,7 +199,7 @@ export default{
             if (filament == null){
                 return "???";
             }
-            let costpergram = filament.cost / filament.grams;
+            let costpergram = filament.price / filament.weight;
             return '$' + (costpergram * model.quantity * model.grams).toFixed(2);
         },
         removeEmptyModels(models){

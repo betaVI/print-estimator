@@ -22,7 +22,7 @@ import Spinner from '@/components/Spinner.vue';
 </template>
 
 <script>
-import { sendRequest } from '@/utilities';
+import { upsertCustomer, getCustomer } from '@/estimater-api';
 
 export default {
     props:{
@@ -48,35 +48,24 @@ export default {
             if (this.id!=0){
                 this.title = 'Edit Customer';
                 this.isloading = true;
-                try{
-                    let data = await sendRequest('/api/customers/' + this.id, 'GET')
-                    this.customer = data.customer;
+                let response = await getCustomer(this.id);
+                if (response.success){
+                    this.customer = response.customer;
                 }
-                catch(error){
-                    console.log(error);
+                else{
+                    console.log(response.error);
                 }
                 this.isloading = false;
             }
         },
         async submit(){
             this.issubmitting = true;
-            let endpoint = '/api/customers'
-            let method = 'POST'
-            if (this.id != 0){
-                endpoint += '/' + this.id;
-                method = 'PATCH';
+            var response = await upsertCustomer(this.id, this.customer);
+            if (response.success){
+                this.$router.back();
             }
-            try{
-                let data = await sendRequest(endpoint, method, this.customer);
-                if (data.success){
-                    this.$router.back();
-                }
-                else{
-                    console.log(data.message)
-                }
-            }
-            catch(error){
-                console.log(error);
+            else {
+                console.log(response.error);
             }
             this.issubmitting = false;
         }

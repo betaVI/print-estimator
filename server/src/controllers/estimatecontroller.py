@@ -126,16 +126,15 @@ def estimates(id: int=0, db: DataProvider = Provide[Container.db]):
             }), 200
     elif request.method == 'POST' and id == 0:
         payload = request.get_json()
-        e = estimate.Estimate(payload)
-        print('Here')
-        db.createEstimate(e)
+        e = estimate.Estimate(payload['estimate'])
+        db.createEstimate(e, payload['filamentsused'])
         return jsonify({
             'success': True
         }), 201
     elif request.method == 'PATCH' and id != 0:
         payload = request.get_json()
-        e = estimate.Estimate(payload)
-        db.updateEstimate(id, e)
+        e = estimate.Estimate(payload['estimate'])
+        db.updateEstimate(id, e, payload['filamentsused'])
         return jsonify({
             'success': True
         }), 201

@@ -106,37 +106,6 @@ class SqliteProvider(DataProvider):
         else:
             sql = 'insert into settings (printablehours, laborcost, kwhcost, printlabor, colorchangelabor, postprocessinglabor, electricmarkup, materialmarkup) values (?,?,?,?,?,?,?,?)'
         self._execute(sql, (settings.printablehours, settings.laborcost, settings.kwhcost, settings.printlabor, settings.colorchangelabor, settings.postprocessinglabor, settings.electricmarkup, settings.materialmarkup))
-    
-    def getFilaments(self, id: int = 0):
-        sql = 'select * from filaments'
-        if id != 0:
-            sql += ' where id = ?'
-            record = self._executeOne(sql, (id,))
-            f = filament.Filament(dict(record))
-            f.isactive = True if f.isactive == 1 else False
-            return f
-        else:
-            records = self._executeRead(sql)
-            filaments = []
-            for r in records:
-                f = filament.Filament(dict(r))
-                f.isactive = True if f.isactive == 1 else False
-                filaments.append(f)
-            return filaments
-
-    def createFilament(self, filament: filament.Filament):
-        sql = 'insert into filaments (name,type,color,isactive,color,cost,grams)'
-        sql += ' values (?,?,?,?,?,?,?)'
-        self._execute(sql, (filament.name, filament.type, filament.color, 1 if filament.isactive else 0, filament.color, filament.cost, filament.grams))
-
-    def updateFilament(self, id: int, filament: filament.Filament):
-        sql = 'update filaments set name = ?, type = ?, color = ?, isactive = ?, color = ?, cost = ?, grams = ? where id = ?'
-        values = (filament.name, filament.type, filament.color, 1 if filament.isactive else 0, filament.color, filament.cost, filament.grams, id)
-        self._execute(sql, values)
-
-    def deleteFilament(self, id:int):
-        sql = 'delete from filaments where id = ?'
-        self._execute(sql, (id,))
 
     def getCustomers(self, id: int):
         sql = 'select * from customers'
@@ -194,12 +163,14 @@ class SqliteProvider(DataProvider):
             record = self._executeOne(sql,(id,))
             e = estimate.Estimate(dict(record))
             e.models = self._getModels(e.id)
+            if e.models is None:
+                e.models = []
             return e
         else:
             return [estimate.Estimate(dict(r)) for r in self._executeRead(sql)]
         
-    def createEstimate(self, estimate: estimate.Estimate):
-        self._populateEstimateFields(estimate)
+    def createEstimate(self, estimate: estimate.Estimate, filamentsused: dict):
+        self._populateEstimateFields(estimate, filamentsused)
         sql = 'insert into estimates (name, totalgrams, materialcost, totalprints, totalprinttime, totalpostprocessing, totalcolors, materialprofit, materialprice,'
         sql += ' electriccost, electricprofit, electricprice, totallabor, totalcost, laborprice, totalcostlabor, minimumprice) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id'
         values = (
@@ -227,8 +198,8 @@ class SqliteProvider(DataProvider):
         print('RESULT: ' + str(lastid))
         self._createModels(lastid['id'], estimate.models)
 
-    def updateEstimate(self, id: int, estimate: estimate.Estimate):
-        self._populateEstimateFields(estimate)
+    def updateEstimate(self, id: int, estimate: estimate.Estimate, filamentsused: dict):
+        self._populateEstimateFields(estimate, filamentsused)
         sql = 'update estimates set name = ?, totalgrams = ?, materialcost = ?, totalprints = ?, totalprinttime = ?, totalpostprocessing = ?, totalcolors = ?, '
         sql += 'materialprofit = ?, materialprice = ?, electriccost = ?, electricprofit = ?, electricprice = ?, totallabor = ?, totalcost = ?, '
         sql += 'laborprice = ?, totalcostlabor = ?, minimumprice = ? where id = ?'
@@ -330,19 +301,15 @@ class SqliteProvider(DataProvider):
             print(f'Sqlite Connection error {traceback.format_exc()}')
         return connection
 
-    def _populateEstimateFields(self, estimate: estimate.Estimate) -> estimate.Estimate:
+    def _populateEstimateFields(self, estimate: estimate.Estimate, filamentused: dict) -> estimate.Estimate:
         config = self.getSettings()
-        filamentused = {}
         estimate.totalgrams = 0
         estimate.materialcost = 0
         estimate.totalprints = 0
         estimate.totalprinttime = 0
         estimate.totalpostprocessing = 0
         for m in estimate.models:
-            if m.filamentid not in filamentused:
-                f = self.getFilaments(m.filamentid)
-                filamentused[m.filamentid] = f.cost / f.grams
-            m.totalcost = round(filamentused[m.filamentid] * m.grams * m.quantity, 2)
+            m.totalcost = round(filamentused[str(m.filamentid)] * m.grams * m.quantity, 2)
             estimate.totalgrams += m.grams * m.quantity
             estimate.materialcost += m.totalcost
             estimate.totalprints += m.quantity

@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { sendRequest } from '@/utilities';
+import { getCustomers, deleteCustomer } from '@/estimater-api';
 
 export default {
     data(){
@@ -40,25 +40,21 @@ export default {
     methods:{
         async loadCustomers(){
             this.isloading = true;
-            try{
-                let response = await sendRequest('/api/customers', 'GET');
+            let response = await getCustomers();
+            if (response.success){
                 this.customers = response.customers;
             }
-            catch(error){
-                console.log(error)
+            else{
+                console.log(response.error);
             }
             this.isloading = false;
         },
         async deleteCustomer(id){
-            try{
-                let data = await sendRequest('/api/customers/'+ id, 'DELETE');
-                if (!data.success){
-                    console.log(error);
-                }
-                this.loadCustomers();
-            }catch(error){
-                console.log(error)
+            let response = await deleteCustomer(id);
+            if (!data.success){
+                console.log(response.error);
             }
+            this.loadCustomers();
         }
     },
     mounted(){

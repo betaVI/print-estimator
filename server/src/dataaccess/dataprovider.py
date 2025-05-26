@@ -8,18 +8,6 @@ class DataProvider:
     def saveSettings(self, settings: settings.Settings):
         pass
     
-    def getFilaments(self, id: int = 0):
-        pass
-
-    def createFilament(self, filament: filament.Filament):
-        pass
-
-    def updateFilament(self, id: int, filament: filament.Filament):
-        pass
-
-    def deleteFilament(self, id:int):
-        pass
-
     def getCustomers(self, id: int = 0):
         pass
 
@@ -47,10 +35,10 @@ class DataProvider:
     def getEstimates(self, id: int = 0):
         pass
 
-    def createEstimate(self, estimate: estimate.Estimate):
+    def createEstimate(self, estimate: estimate.Estimate, filamentsused:dict):
         pass
 
-    def updateEstimate(self, id: int, estimate: estimate.Estimate):
+    def updateEstimate(self, id: int, estimate: estimate.Estimate, filamentsused:dict):
         pass
 
     def deleteEstimate(self, id: int):
