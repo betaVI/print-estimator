@@ -30,6 +30,7 @@ BUILD:
 DEPLOY:
   variables:
     ENVIRONMENT: QA
+    SPOOLMAN_API_ENDPOINT: 'http://localhost:5000'
     # CONTAINER_IMAGE: $QA_CONTAINER_IMAGE
   stage: deploy QA
   before_script:
