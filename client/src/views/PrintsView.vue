@@ -73,10 +73,16 @@ export default {
         },
         displayCustomer(customerid){
             let customer = this.customers.find(c=>c.id == customerid);
+            if (customer == null){
+                return '?? (??/??)';
+            }
             return `${customer.name} (${customer.description})`;
         },
         displayEstimate(estimateid){
             let estimate = this.estimates.find(e=>e.id == estimateid);
+            if (estimate == null){
+                return '?? (??/??)';
+            }
             return `${estimate.name} ($${estimate.totalcostlabor}/$${estimate.minimumprice})`;
         },
         async deletePrint(id){
