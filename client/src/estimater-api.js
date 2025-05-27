@@ -159,12 +159,12 @@ export async function upsertPrint(id, print){
     var response = {success:false,error:null};
     let endpoint = '/api/prints';
     let method = 'POST'
-    if (this.id != 0){
+    if (id != 0){
         endpoint += '/' + id;
         method = 'PATCH';
     }
     try{
-        let data = await sendRequest(estimaterapiendpoint + endpoint, print)
+        let data = await sendRequest(estimaterapiendpoint + endpoint, 'POST', print)
         response.success = data.success;
         response.error = data.message;
     }catch(error){
