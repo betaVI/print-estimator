@@ -19,6 +19,8 @@ variables:
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
 
 BUILD:
+  variables:
+    VITE_SPOOLMAN_API_ENDPOINT: 'http://localhost:5000'
   stage: build QA
   before_script:
     - *docker-login
@@ -30,7 +32,6 @@ BUILD:
 DEPLOY:
   variables:
     ENVIRONMENT: QA
-    SPOOLMAN_API_ENDPOINT: 'http://localhost:5000'
     # CONTAINER_IMAGE: $QA_CONTAINER_IMAGE
   stage: deploy QA
   before_script:
