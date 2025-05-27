@@ -50,11 +50,13 @@ export default {
             this.isloading = false;
         },
         async deleteCustomer(id){
-            let response = await deleteCustomer(id);
-            if (!data.success){
-                console.log(response.error);
+            if (confirm('This action is permanent. Are you sure you want to continue?')){
+                let response = await deleteCustomer(id);
+                if (!data.success){
+                    console.log(response.error);
+                }
+                this.loadCustomers();
             }
-            this.loadCustomers();
         }
     },
     mounted(){

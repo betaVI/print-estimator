@@ -79,11 +79,13 @@ export default{
             this.estimatesLoading = false;
         },
         async deleteEstimate(id){
-            let response = await deleteEstimate(id);
-            if (!response.success){
-                console.log(response.error);
+            if (confirm('This action is permanent. Are you sure you want to continue?')){
+                let response = await deleteEstimate(id);
+                if (!response.success){
+                    console.log(response.error);
+                }
+                this.getEstimates();
             }
-            this.getEstimates();
         },
         formatPrintTime(totaltime){
             let hoursinday = 24;
