@@ -80,13 +80,15 @@ export default {
             return `${estimate.name} ($${estimate.totalcostlabor}/$${estimate.minimumprice})`;
         },
         async deletePrint(id){
-            this.isloading = true;
-            let response = await deletePrint(id);
-            if (!response.success){
-                console.log(response.error);
+            if (confirm('This action is permanent. Are you sure you want to continue?')){
+                this.isloading = true;
+                let response = await deletePrint(id);
+                if (!response.success){
+                    console.log(response.error);
+                }
+                this.loadPage();
+                this.isloading = false;
             }
-            this.loadPage();
-            this.isloading = false;
         }
     },
     mounted(){
