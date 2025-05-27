@@ -4,7 +4,7 @@
             <div class="row mb-3">
                 <div class="col">
                     <div class="form-floating">
-                        <select v-model="print.estimateid" class="form-select" id="estimate">
+                        <select v-model="print.estimateid" class="form-select" id="estimate" @change="displaySpoolSelection">
                             <option selected value="">Select an Estimate</option>
                             <option v-for="estimate in estimates" :value="estimate.id">{{ estimate.name }} (${{ estimate.totalcostlabor }}/${{ estimate.minimumprice }})</option>
                         </select>
@@ -35,12 +35,24 @@
                     </div>
                 </div>
             </div>
+            <hr class="hr"/>
+            <div class="row w-75 mx-auto mb-3" v-for="filament in spoolSelection">
+                <div class="col text-end my-auto">
+                    {{ filament.name }}
+                </div>
+                <div class="col">
+                    <select class="form-select">
+                        <option v-for="spool in spools.filter(s=>s.filament.id == filament.id)" :value="spool.id">#{{ spool.id }} {{ spool.filament.vendor.name }} {{ spool.filament.name }} {{ spool.filament.material }} ${{ spool.price / spool.initial_weight }} ({{ spool.remaining_weight.toFixed(0) }}g left)</option>
+                    </select>
+                </div>
+            </div>
         </template>
     </EditView>
 </template>
 
 <script>
-import { sendRequest } from '@/utilities';
+import { upsertPrint, getEstimates, getEstimate, getCustomers, getPrint } from '@/estimater-api';
+import { getSpools, getFilaments } from '@/spoolman-api';
 
 export default{
     props:{
@@ -56,52 +68,78 @@ export default{
             issubmitting: false,
             customers:[],
             estimates:[],
+            filaments:[],
+            spools:[],
+            spoolSelection:[],
             print:{
                 customerid: "",
                 estimateid: "",
                 price: null,
+                spools:[]
             }
         }
     },
     methods: {
         async loadPage(){
             this.isloading = true;
-            try{
-                let data = await sendRequest('/api/estimates', 'GET');
-                this.estimates = data.estimates;
+            let response = await getEstimates();
+            if (response.success){
+                this.estimates = response.estimates;
+            }
 
-                data = await sendRequest('/api/customers', 'GET');
-                this.customers = data.customers;
+            response = await getCustomers();
+            if (response.success){
+                this.customers = response.customers;
+            }
 
-                if (this.id!=0){
-                    data = await sendRequest('/api/prints/' + this.id, 'GET');
-                    this.print = data.print;
+            response = await getSpools();
+            if (response.success){
+                this.spools = response.spools;
+            }
+
+            response = await getFilaments();
+            if (response.success){
+                this.filaments = response.filaments;
+            }
+
+            if (this.id != 0){
+                response = await getPrint(this.id);
+                if (response.success){
+                    this.print = response.print;
+                    this.displaySpoolSelection(null);
                 }
-            }catch(error){
-                console.log(error);
+                else{
+                    console.log(response.error);
+                }
             }
             this.isloading = false;
         },
         async submit(){
             this.issubmitting = true;
-            try{
-                if (this.id==0){
-                    let data = await sendRequest('/api/prints', 'POST', this.print);
-                    if (!data.success){
-                        console.log(error);
-                    }
-                }
-                else{
-                    let data = await sendRequest('/api/prints/' + this.id, 'PATCH', this.print);
-                    if (!data.success){
-                        console.log(error)
-                    }
-                }
+            let response = await upsertPrint(this.id, this.print);
+            if (response.success){
                 this.$router.push({ name: 'prints' });
-            }catch(error){
-                console.log(error);
+            }
+            else{
+                console.log(response.error);
             }
             this.issubmitting = false;
+        },
+        async displaySpoolSelection(event){
+            let response = await getEstimate(this.print.estimateid);
+            if (!response.success){
+                console.log(response.error);
+                return;
+            }
+
+            let filamentsused = [...new Set(response.estimate.models.map(m=>m.filamentid))];
+            this.spoolSelection = filamentsused.map(id=>{
+                let filament = this.filaments.find(f=>f.id == id);
+                return {
+                    id: id,
+                    name: `${filament.vendor.name} ${filament.material} ${filament.name}`
+                }
+            })
         }
     },
     mounted(){
