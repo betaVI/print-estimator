@@ -164,7 +164,7 @@ export async function upsertPrint(id, print){
         method = 'PATCH';
     }
     try{
-        let data = await sendRequest(estimaterapiendpoint + endpoint, 'POST', print)
+        let data = await sendRequest(estimaterapiendpoint + endpoint, method, print)
         response.success = data.success;
         response.error = data.message;
     }catch(error){
