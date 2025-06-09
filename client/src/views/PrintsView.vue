@@ -6,6 +6,7 @@
                 <th scope="col">Print</th>
                 <th scope="col">Customer</th>
                 <th scope="col">Price</th>
+                <th scope="col">Profit</th>
                 <th></th>
             </tr>
         </template>
@@ -18,6 +19,7 @@
                 <td>{{ displayEstimate(print.estimateid) }}</td>
                 <td>{{ displayCustomer(print.customerid) }}</td>
                 <td>{{ '$' + print.price.toFixed(2) }}</td>
+                <td>{{ displayProfit(print) }}</td>
                 <td class="text-end">
                     <button type="button" class="btn btn-outline-info btn-sm mx-sm-1" @click="$router.push({ name: 'print', params: { id: print.id }})">
                         <i class="bi bi-pencil"></i>
@@ -84,6 +86,13 @@ export default {
                 return '?? (??/??)';
             }
             return `${estimate.name} ($${estimate.totalcostlabor}/$${estimate.minimumprice})`;
+        },
+        displayProfit(print){
+            let estimate = this.estimates.find(e=>e.id == print.estimateid);
+            if (estimate == null){
+                return '$?.??'
+            }
+            return `$${print.price - estimate.totalcostlabor}`
         },
         async deletePrint(id){
             if (confirm('This action is permanent. Are you sure you want to continue?')){
