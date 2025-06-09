@@ -42,7 +42,7 @@
                 </div>
                 <div class="col">
                     <select class="form-select">
-                        <option v-for="spool in spools.filter(s=>s.filament.id == filament.id)" :value="spool.id">#{{ spool.id }} {{ spool.filament.vendor.name }} {{ spool.filament.name }} {{ spool.filament.material }} ${{ spool.price / spool.initial_weight }} ({{ spool.remaining_weight.toFixed(0) }}g left)</option>
+                        <option v-for="spool in spools.filter(s=>s.filament.id == filament.id)" :value="spool.id">#{{ spool.id }} {{ spool.filament.vendor.name }} {{ spool.filament.name }} {{ spool.filament.material }} ${{ getSpoolPrice(spool) }} ({{ spool.remaining_weight.toFixed(0) }}g left)</option>
                     </select>
                 </div>
             </div>
@@ -140,6 +140,12 @@ export default{
                     name: `${filament.vendor.name} ${filament.material} ${filament.name}`
                 }
             })
+        },
+        getSpoolPrice(spool){
+            if (spool.price){
+                return spool.price;
+            }
+            return spool.filament.price;
         }
     },
     mounted(){
