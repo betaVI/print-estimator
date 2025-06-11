@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import { sendRequest } from '@/utilities';
 import { getCustomers, getEstimates, getPrints, deletePrint } from '@/estimater-api';
 
 export default {
@@ -76,7 +75,7 @@ export default {
         displayCustomer(customerid){
             let customer = this.customers.find(c=>c.id == customerid);
             if (customer == null){
-                return '?? (??/??)';
+                return '?? (??)';
             }
             return `${customer.name} (${customer.description})`;
         },

@@ -1,7 +1,7 @@
 <template>
     <form>
         <div class="container">
-            <Alert :visible="alert.show" :success="alert.success" :message="alert.message"></Alert>
+            <Alert :visible="alert.show" :success="alert.success" :message="alert.message" @dismissed="alert.show=false"></Alert>
             <div v-if="isloading" class="col-12-sm text-center">
                 <Spinner></Spinner>
             </div>
@@ -112,7 +112,7 @@ export default{
         },
         async saveSettings(){
             this.issubmitting = true;
-            var response = await saveSettings(this.settings);
+            let response = await saveSettings(this.settings);
             if (response.success){
                 this.showAlert('Successfully updated settings', true);
             }

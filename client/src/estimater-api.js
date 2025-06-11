@@ -194,4 +194,5 @@ export async function saveSettings(settings){
     }catch(error){
         response.error = error;
     }
+    return response;
 }
