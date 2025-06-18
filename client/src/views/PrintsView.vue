@@ -91,7 +91,7 @@ export default {
             if (estimate == null){
                 return '$?.??'
             }
-            return `$${print.price - estimate.totalcostlabor}`
+            return `$${print.price - estimate.totalcostlabor.toFixed(2)}`
         },
         async deletePrint(id){
             if (confirm('This action is permanent. Are you sure you want to continue?')){
