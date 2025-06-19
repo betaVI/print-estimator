@@ -319,7 +319,7 @@ class SqliteProvider(DataProvider):
         estimate.totalcolors = len(filamentused)
 
         estimate.materialprofit = round(estimate.materialcost * config.materialmarkup, 2)
-        estimate.materialprice = estimate.materialcost + estimate.materialprofit
+        estimate.materialprice = round(estimate.materialcost + estimate.materialprofit)
 
         estimate.electriccost = round((estimate.totalprinttime / 60) * config.kwhcost, 2)
         estimate.electricprofit = round(estimate.electriccost * config.electricmarkup, 2)
