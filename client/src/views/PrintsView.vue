@@ -16,6 +16,7 @@
                     <th scope="col">Date</th>
                     <th scope="col">Print</th>
                     <th scope="col">Customer</th>
+                    <th scope="col">Total Labor Cost</th>
                     <th scope="col">Price</th>
                     <th scope="col">Profit</th>
                     <th></th>
@@ -29,6 +30,7 @@
                     <td>{{ print.createon }}</td>
                     <td>{{ displayEstimate(print.estimateid) }}</td>
                     <td>{{ displayCustomer(print.customerid) }}</td>
+                    <td>{{ displayTotalLaborCost(print.estimateid) }}</td>
                     <td>{{ '$' + print.price.toFixed(2) }}</td>
                     <td>{{ displayProfit(print) }}</td>
                     <td class="text-end">
@@ -97,6 +99,13 @@ export default {
                 return '?? (??/??)';
             }
             return `${estimate.name} ($${estimate.totalcostlabor}/$${estimate.minimumprice})`;
+        },
+        displayTotalLaborCost(estimateid){
+            let estimate = this.estimates.find(e=>e.id == print.estimateid);
+            if (estimate == null){
+                return '$?.??'
+            }
+            return `$${estimate.totalcostlabor.toFixed(2)}`
         },
         displayProfit(print){
             let estimate = this.estimates.find(e=>e.id == print.estimateid);
