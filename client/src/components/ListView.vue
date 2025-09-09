@@ -1,5 +1,4 @@
 <template>
-    <div class="container">
         <div class="row">
             <h1 class="col-sm-11 float-start">{{ title }}</h1>
             <div class="col-sm-1 text-center float-end">
@@ -28,7 +27,6 @@
                 </slot>
             </tbody>
         </table>
-    </div>
 </template>
 
 <script>
