@@ -167,7 +167,7 @@ class SqliteProvider(DataProvider):
                 e.models = []
             return e
         else:
-            sql += ' order by id'
+            sql += ' order by id desc'
             return [estimate.Estimate(dict(r)) for r in self._executeRead(sql)]
         
     def createEstimate(self, estimate: estimate.Estimate, filamentsused: dict):
