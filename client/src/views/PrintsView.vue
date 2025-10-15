@@ -101,7 +101,7 @@ export default {
             return `${estimate.name} ($${estimate.totalcostlabor}/$${estimate.minimumprice})`;
         },
         displayTotalLaborCost(estimateid){
-            let estimate = this.estimates.find(e=>e.id == print.estimateid);
+            let estimate = this.estimates.find(e=>e.id == estimateid);
             if (estimate == null){
                 return '$?.??'
             }
