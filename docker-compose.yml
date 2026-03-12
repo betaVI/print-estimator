@@ -17,6 +17,7 @@ services:
       - proxy-network
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
+      VITE_SPOOLMAN_API_ENDPOINT: ${SPOOLMAN_API_ENDPOINT}
 
 networks:
   proxy-network:

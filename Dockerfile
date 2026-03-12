@@ -7,7 +7,7 @@ RUN npm install
 COPY ./client ./
 
 ENV VITE_API_ENDPOINT=''
-ENV VITE_SPOOLMAN_API_ENDPOINT='http://localhost:5000'
+ENV VITE_SPOOLMAN_API_ENDPOINT=''
 
 RUN npm run build
 
